@@ -17,3 +17,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+backup_install node.name
+backup_generate_config node.name
+gem_package "fog" do
+    version "~> 1.4.0"
+  end
+backup_generate_model "mongodb" do
+  description "MongoDB backup"
+  backup_type "database"
+  database_type "MongoDB"
+  split_into_chunks_of 2048
+  store_with({"engine" => "S3", "settings" => { "s3.access_key_id" => node[:s3backup][:key], "s3.secret_access_key" => node[:s3backup][:secret], "s3.region" => node[:s3backup][:region], "s3.bucket" => node[:s3backup][:bucket], "s3.path" => node[:s3backup][:path], "s3.keep" => 10 } } )
+  hour '*'
+  options({"db.host" => "\"localhost\"", "db.lock" => true})
+  mailto "shanestillwell@gmail.com"
+  cron_path "/bin:/usr/bin:/usr/local/bin"
+  tmp_path "/mnt/backups"
+  cron_log "/var/log/backups.log"
+  action :backup
+end
