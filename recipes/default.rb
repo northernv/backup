@@ -18,6 +18,6 @@
 # limitations under the License.
 #
 Chef::Log.info("Setting environment variables")
-Chef::Log.info(node)
-backup_install "mongodb1"
+Chef::Log.info(node[:name])
+backup_install
 
